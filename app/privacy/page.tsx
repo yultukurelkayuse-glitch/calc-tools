@@ -4,6 +4,9 @@ import InfoPageShell from "../components/InfoPageShell";
 export const metadata: Metadata = {
   title: "プライバシーポリシー | スマート計算ツール",
   description: "スマート計算ツールの個人情報、Cookie、広告配信等の取り扱いについて。",
+  alternates: {
+    canonical: "/privacy",
+  },
 };
 
 export default function PrivacyPage() {

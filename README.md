@@ -30,8 +30,18 @@ npm run dev
    - Build output directory: `out`
 3. 環境変数（Settings → Environment variables）:
    - `NODE_VERSION` = `22`（Next.js 16 は Node.js 20.9 以上が必要）
+   - `NEXT_PUBLIC_SITE_URL` = `https://smart-tools-calc.com`（canonical URL・`robots.txt`・`sitemap.xml` の生成に使用）
    - `NEXT_PUBLIC_ADSENSE_CLIENT` = `ca-pub-XXXXXXXXXXXXXXXX`（AdSense 広告を掲載する場合のみ設定。未設定の場合は広告スクリプトが読み込まれず、プレースホルダーのみ表示されます）
 4. 「Save and Deploy」で公開します。
+
+## カスタムドメイン（smart-tools-calc.com）
+
+1. Cloudflare Pages のプロジェクト → **Custom domains** → **Set up a custom domain** で `smart-tools-calc.com` を入力します。
+2. ドメインが同じCloudflareアカウントのゾーンとして追加されていれば、CNAMEレコードは自動で作成されます（`smart-tools-calc.com` → `<プロジェクト名>.pages.dev`）。他社で取得したドメインの場合は、DNS設定でCNAMEを `<プロジェクト名>.pages.dev` に向けてください。
+3. SSL証明書は自動で発行されます（数分〜最大24時間）。
+4. Google AdSense の申請時は、サイトURLに `https://smart-tools-calc.com` を登録してください。
+
+サイトの正規URL（canonical）・`robots.txt`・`sitemap.xml` は `NEXT_PUBLIC_SITE_URL` から生成されます。未設定の場合は `https://smart-tools-calc.com` が使用されます。
 
 ## スクリプト
 

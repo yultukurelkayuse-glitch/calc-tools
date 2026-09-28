@@ -4,6 +4,9 @@ import InfoPageShell from "../components/InfoPageShell";
 export const metadata: Metadata = {
   title: "運営者情報 | スマート計算ツール",
   description: "スマート計算ツールの運営者とサービスの目的をご紹介します。",
+  alternates: {
+    canonical: "/about",
+  },
 };
 
 export default function AboutPage() {
