@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
-import { SITE_URL } from "./lib/site";
-
-const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT?.trim();
+import { SITE_URL, ADSENSE_CLIENT } from "./lib/site";
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto-sans-jp",
@@ -27,12 +24,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col bg-slate-50 font-sans">
         {children}
-        {adsenseClient && (
-          <Script
-            id="google-adsense"
-            strategy="beforeInteractive"
+        {ADSENSE_CLIENT && (
+          <script
+            async
             crossOrigin="anonymous"
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(adsenseClient)}`}
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(ADSENSE_CLIENT)}`}
           />
         )}
       </body>
