@@ -26,5 +26,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       priority: 0.3,
     },
+    {
+      url: `${SITE_URL}/tools/character-count`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/tools/character-count/about`,
+      lastModified: new Date(),
+      priority: 0.3,
+    },
+    {
+      url: `${SITE_URL}/tools/character-count/contact`,
+      lastModified: new Date(),
+      priority: 0.3,
+    },
+    {
+      url: `${SITE_URL}/tools/character-count/privacy`,
+      lastModified: new Date(),
+      priority: 0.3,
+    },
   ];
 }
