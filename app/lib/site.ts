@@ -12,5 +12,4 @@ export const ADSENSE_CLIENT =
  */
 export const SITE_TOOLS: Record<string, string> = {
   "/text/duplicate-lines": "テキスト重複削除ツール",
-  "/text/zenkaku-hankaku": "全角・半角変換ツール",
 };
