@@ -12,4 +12,5 @@ export const ADSENSE_CLIENT =
  */
 export const SITE_TOOLS: Record<string, string> = {
   "/text/duplicate-lines": "テキスト重複削除ツール",
+  "/text/text-diff": "テキスト比較ツール",
 };
