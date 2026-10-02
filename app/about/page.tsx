@@ -15,7 +15,7 @@ export default function AboutPage() {
       <dl className="divide-y divide-slate-100 text-sm">
         <div className="grid gap-1 py-4 sm:grid-cols-[8rem_1fr] sm:gap-4">
           <dt className="font-bold text-slate-500">サイト名</dt>
-          <dd className="font-semibold text-slate-800">お買いもの計算ツールズ</dd>
+          <dd className="font-semibold text-slate-800">テキスト重複削除ツール</dd>
         </div>
         <div className="grid gap-1 py-4 sm:grid-cols-[8rem_1fr] sm:gap-4">
           <dt className="font-bold text-slate-500">運営者</dt>

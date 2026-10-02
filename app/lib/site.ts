@@ -4,3 +4,13 @@ export const SITE_URL = (
 
 export const ADSENSE_CLIENT =
   process.env.NEXT_PUBLIC_ADSENSE_CLIENT?.trim() || "ca-pub-8352654211889930";
+
+/**
+ * ツールのパスと名称の対応。
+ * infoページ（privacy / contact / about）の戻るリンク表示に使う。
+ * 新しいツールページを追加したら、ここに1行追加する。
+ */
+export const SITE_TOOLS: Record<string, string> = {
+  "/text/duplicate-lines": "テキスト重複削除ツール",
+  "/text/zenkaku-hankaku": "全角・半角変換ツール",
+};
