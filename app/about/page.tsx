@@ -3,7 +3,7 @@ import InfoPageShell from "../components/InfoPageShell";
 
 export const metadata: Metadata = {
   title: "運営者情報 | お買いもの計算ツールズ",
-  description: "お買いもの計算ツールズの運営者とサービスの目的をご紹介します。",
+  description: "お買いもの計算ツールズの運営者、サイトの目的、ツールの提供方針をご紹介します。",
   alternates: {
     canonical: "/about",
   },
@@ -15,39 +15,45 @@ export default function AboutPage() {
       <dl className="divide-y divide-slate-100 text-sm">
         <div className="grid gap-1 py-4 sm:grid-cols-[8rem_1fr] sm:gap-4">
           <dt className="font-bold text-slate-500">サイト名</dt>
-          <dd className="font-semibold text-slate-800">テキスト重複削除ツール</dd>
+          <dd className="font-semibold text-slate-800">お買いもの計算ツールズ</dd>
         </div>
         <div className="grid gap-1 py-4 sm:grid-cols-[8rem_1fr] sm:gap-4">
           <dt className="font-bold text-slate-500">運営者</dt>
           <dd className="font-semibold text-slate-800">スマートツール開発チーム</dd>
         </div>
         <div className="grid gap-1 py-4 sm:grid-cols-[8rem_1fr] sm:gap-4">
-          <dt className="font-bold text-slate-500">目的</dt>
+          <dt className="font-bold text-slate-500">サイトの目的</dt>
           <dd className="leading-7 text-slate-700">
-            日常をもっと便利に、直感的に解決するためのWEBアプリを提供しています。
+            買い物中にふと生まれる「これ、いくら？」——セール品の値引き後の価格、
+            税込みの合計、○○円の○%——を、電卓を取り出して式を組み立てるより手軽に、
+            その場ですぐ解決できるWebアプリを提供することです。
           </dd>
         </div>
       </dl>
       <div className="mt-6 space-y-5 text-sm leading-7 text-slate-600">
         <section>
-          <h2 className="mb-2 text-base font-bold text-slate-800">提供しているツール</h2>
+          <h2 className="mb-2 text-base font-bold text-slate-800">対象としている方</h2>
           <p>
-            当サイトでは、買い物や日常生活で役立つ計算ツールを提供しています。割引計算、消費税計算、パーセント計算の3つのツールを、ブラウザ上でそのまま使える無料のWebアプリとして公開しています。
+            セール中の商品の支払額をすぐに知りたい方、買い物リストの税込み合計を確認したい方、
+            予算や料金の一部を割合で計算したい方など、日常や仕事の中でちょっとした計算を手軽に行いたいすべての方にご利用いただけます。
           </p>
         </section>
         <section>
-          <h2 className="mb-2 text-base font-bold text-slate-800">利用していただきたい方</h2>
+          <h2 className="mb-2 text-base font-bold text-slate-800">ツールを提供する理由</h2>
           <p>
-            セール中の商品の値段をすぐに知りたい方、買い物中の消費税込みの金額を確認したい方、仕事や学習で簡単な割合の計算が必要な方など、日常や仕事の中でちょっとした計算を手軽に行いたいすべての方に利用いただけるサイトです。
+            割引後の価格や税込み額の計算は、暗算では間違えやすく、電卓でも式を一度組み立てる必要があります。
+            「元の金額と割引率を入れるだけ」「税率を商品ごとに選ぶだけ」「文章の穴埋めに入れるだけ」という形にすることで、
+            考える手間を減らし、買い物のその場で直感的に答えを確認できることを目指しています。
+            すべてのツールを無料で、インストール不要のブラウザ上で提供しています。
           </p>
         </section>
         <section>
-          <h2 className="mb-2 text-base font-bold text-slate-800">サイト運営の方針</h2>
+          <h2 className="mb-2 text-base font-bold text-slate-800">ツールの改善・確認方針</h2>
           <p>
-            正確で使いやすいツールを提供することを最も重視しています。どのページでも迷わず目的の計算ができるよう、シンプルで分かりやすい画面を心がけ、スマートフォンからでも快適に操作できる設計にしています。
-          </p>
-          <p>
-            今後も既存ツールの改善と新しいツールの追加を継続的に行い、日常や仕事の中で気軽に頼れる計算サイトを目指して運営していきます。
+            計算の仕組みは各ツールページの「計算方法」で公開し、誰が確認できるようにしています。
+            使い方や注意点、よくある疑問も同じページにまとめ、計算結果の読み取り間違いが起きにくい構成を心がけています。
+            ご指摘いただいた不具合や改善のご意見はお問い合わせページから受け付けており、
+            既存ツールの改善を優先して反映していきます。
           </p>
         </section>
         <section>

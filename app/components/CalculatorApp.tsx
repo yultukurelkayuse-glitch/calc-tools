@@ -2,7 +2,6 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import AdPlaceholder from "./AdPlaceholder";
 
 type TabId = "discount" | "tax" | "percent";
 
@@ -27,6 +26,211 @@ const QUICK_RATES: { value: number; label: string }[] = [
   { value: 30, label: "30% OFF" },
   { value: 50, label: "半額" },
 ];
+
+const THINGS_YOU_CAN_DO: { icon: string; title: string; description: string }[] = [
+  {
+    icon: "🛒",
+    title: "セール商品の割引後価格を確認",
+    description:
+      "「20% OFFっていくらになる？」割引後の支払額と、いくら安くなるかをすぐ確認できます。",
+  },
+  {
+    icon: "🛍️",
+    title: "税込み価格・税額を確認",
+    description:
+      "買い物リストの税込合計を、商品ごとに8%・10%の税率を選んでレシート風に計算できます。",
+  },
+  {
+    icon: "🔢",
+    title: "○○の○%を計算",
+    description:
+      "「2,000円の15%はいくら？」のような割合を、式を考えずに穴埋めで求められます。",
+  },
+];
+
+const TOOL_GUIDE: { question: string; answer: string; tab: TabId }[] = [
+  {
+    question: "20% OFFのときの支払額を知りたい",
+    answer: "割引計算",
+    tab: "discount",
+  },
+  {
+    question: "買い物の税込み合計を知りたい",
+    answer: "消費税計算",
+    tab: "tax",
+  },
+  {
+    question: "2,000円の15%など、割合の金額を知りたい",
+    answer: "パーセント計算",
+    tab: "percent",
+  },
+];
+
+const USAGE_EXAMPLES: {
+  icon: string;
+  scene: string;
+  input: string;
+  output: string;
+  tab: TabId;
+}[] = [
+  {
+    icon: "🛒",
+    scene: "洋服が2,980円で30% OFFのセール中。支払額を知りたい",
+    input: "元の金額 2,980円、割引率 30% OFF",
+    output: "支払額 2,086円（894円お得）",
+    tab: "discount",
+  },
+  {
+    icon: "🛍️",
+    scene: "税抜1,200円のお弁当（8%）と税抜680円のお茶（10%）の税込合計を知りたい",
+    input: "お弁当 1,200円・8%、お茶 680円・10%",
+    output: "税込合計 2,044円",
+    tab: "tax",
+  },
+  {
+    icon: "🔢",
+    scene: "5,000円の予算のうち20%を貯金に回したい。いくらなら",
+    input: "A 5,000、B 20",
+    output: "1,000円",
+    tab: "percent",
+  },
+];
+
+type RelatedToolLink = { tab: TabId; label: string; when: string };
+type HelpFAQ = { q: string; a: string };
+type HelpContent = {
+  summary: string;
+  steps: string[];
+  method: string;
+  notes: string[];
+  faqs: HelpFAQ[];
+  related: RelatedToolLink[];
+};
+
+const DISCOUNT_HELP: HelpContent = {
+  summary:
+    "セール中の商品について、割引を適用した後の支払額といくら安くなるか（値引き額）を計算できます。",
+  steps: [
+    "「元の金額」にセール前の価格を入力します（例：3,000）。",
+    "「割引率」に割引の割合を入力します（例：20）。10%・20%・半額などのボタンをタップすると入力できます。",
+    "「計算する」を押すと、割引後の支払額と値引き額が表示されます。「結果をコピー」で金額をコピーできます。",
+  ],
+  method:
+    "割引後の価格は、元の金額から割引分を差し引いて求めます。3,000円の20% OFFなら、元の金額のうち残る割合は80%なので、3,000円に0.8を掛けた2,400円が支払額の目安になり、値引き額は600円です。割引率は「100%から割引率を引いた残りの割合」と考えると直感的です。",
+  notes: [
+    "金額はカンマ付きで入力でき、小数を含む金額・割引率にも対応します。割引率は0から100までが対象で、100%なら計算上の支払額は0円、0%なら元の金額のままです。",
+    "計算結果は目安です。クーポン併用の可否、割引上限、税込・税抜のどちらを基準にするかは販売者の表示をご確認ください。最終的な請求額は店舗の表示・レシートを優先してください。",
+  ],
+  faqs: [
+    {
+      q: "割引が複数ある場合（20% OFFの後、さらに10% OFF）はどう計算すればいいですか？",
+      a: "割引率を単純に足し算しません。3,000円を20%引きにした後、さらに10%引きにすると、まず2,400円になり、その金額から10%を引いた2,160円が目安です。",
+    },
+    {
+      q: "「20%ポイント還元」と同じですか？",
+      a: "違います。ポイント還元は会計時の値引きではなく、後からポイントが付与される条件の場合があります。値段そのものが下がるのは割引です。",
+    },
+    {
+      q: "税込価格と税抜価格のどちらを入力すればいいですか？",
+      a: "どちらの金額でも割引計算自体はできますが、割引が税込・税抜のどちらに適用されるかは店舗によって異なります。心配なときは割引計算機で割引後の税抜金額を出し、消費税計算機で税込額を確認する流れがおすすめです。",
+    },
+  ],
+  related: [
+    {
+      tab: "tax",
+      label: "消費税計算機",
+      when: "割引後の金額に消費税を加えた税込価格も確認したい",
+    },
+    {
+      tab: "percent",
+      label: "パーセント計算機",
+      when: "「元の値段の○%はいくら」だけを知りたい",
+    },
+  ],
+};
+
+const TAX_HELP: HelpContent = {
+  summary:
+    "商品ごとに税率（8%・10%）を選んで、買い物リストの小計（税抜）・消費税額・税込合計を計算できます。",
+  steps: [
+    "「＋ 商品を追加」で買い物リストに行を追加します。",
+    "商品名（任意）と税抜金額を入力し、8%・10%のスイッチでその商品の税率を選びます。",
+    "「計算する」を押すと、小計（税抜）・消費税額・税込合計が表示されます。行末の×で不要な商品を削除できます。",
+  ],
+  method:
+    "各行の金額に選択した税率分を加え、商品ごとの税込額を合計します。たとえば税抜1,000円で10%なら税込1,100円、税抜500円で8%なら税込540円となり、二品の税込合計は1,640円です。消費税額は税抜価格に税率を掛けて求めます。日本では標準税率10%に加え、一定の飲食料品や新聞などに適用される軽減税率8%があります。",
+  notes: [
+    "店頭価格が税込表示の場合、その金額を税抜金額として入力すると税が二重に加算されてしまいます。入力前に値札やレシートの表示方法を確かめてください。",
+    "実際の税額は事業者の端数処理や、商品単位・税率ごとの合計単位などにより、この簡易計算の結果と数円異なる場合があります。会計の確定額にはレシートや販売者の請求を優先してください。",
+  ],
+  faqs: [
+    {
+      q: "表示価格が税込か税抜か分からないときはどうすればいいですか？",
+      a: "値札やレシートの表示、販売者の案内をご確認ください。日本の店頭では税込価格を表示する店舗が多いため、税込表示の価格を入力すると税が重なってしまいます。",
+    },
+    {
+      q: "軽減税率8%の対象はどう決まりますか？",
+      a: "一定の飲食料品や新聞などが対象ですが、商品区分や提供方法などの条件によって変わります。お弁当などは持ち帰りと店内飲食で税率が異なる例があり、酒類や外食は対象外となる場合があります。実際の区分は購入先の表示をご確認ください。",
+    },
+    {
+      q: "計算結果がレシートと数円違うのはなぜですか？",
+      a: "実際の会計では事業者ごとの端数処理（1円単位の切り捨てなど）や、商品単位・税率ごとの合計単位が用いられるためです。本ツールは買い物の概算を素早く把握するためのものです。",
+    },
+  ],
+  related: [
+    {
+      tab: "discount",
+      label: "割引計算機",
+      when: "セール品の割引後の税抜金額を先に計算したい",
+    },
+    {
+      tab: "percent",
+      label: "パーセント計算機",
+      when: "「税抜○○円の10%はいくら」など一部の割合を知りたい",
+    },
+  ],
+};
+
+const PERCENT_HELP: HelpContent = {
+  summary:
+    "「AのB%はいくら？」という形式で、全体の中から取り出したい割合の量（金額・個数・点数など）を計算できます。",
+  steps: [
+    "「A」に全体の数（例：2,000）、「B」に調べたい割合（例：15）を入力します。",
+    "「計算する」を押すと答えが表示されます。「結果をコピー」で数値をコピーできます。",
+  ],
+  method:
+    "パーセントは「100を基準にした割合」を表します。100%は全体と同じ量、50%は全体の半分、25%は4分の1です。「AのB%」を求めるときは、Aを全体として、そのB割分を取り出します。例として2,000の15%は300です。",
+  notes: [
+    "答えの単位は元の数値と同じになります。円の15%なら円、250点の80%なら点として読んでください。",
+    "Aが0なら、どの割合を指定しても結果は0になります。小数の割合や金額を入力した際は、計算結果に端数が含まれることがあります。表示値は目安として読み取り、実際の支払い・配分では必要な丸め方を確認してください。",
+  ],
+  faqs: [
+    {
+      q: "「40は200の何%？」は計算できますか？",
+      a: "この形式は「200を基準に40が占める割合」を求める別の計算です（答えは20%）。本ツールは「AのB%はいくら」という形式に対応しています。割合を知りたいのか、割合に相当する量を知りたいのかを文章にしてから入力すると間違いが減らせます。",
+    },
+    {
+      q: "Bに100より大きい数を入れてもいいですか？",
+      a: "はい。全体より大きい結果になりますが、これは誤りとは限らず、元の量に対して何倍に当たるかを表す用途で使われます（150%なら全体の1.5倍）。",
+    },
+    {
+      q: "割引計算や税込計算との使い分けは？",
+      a: "割引後の支払額を知りたいときは割引計算機、税込合計を知りたいときは消費税計算機が便利です。本ツールは「予算の一部」「レシピの人数割り」「テストの得点率」など、割合の量を取り出したいあらゆる場面に使えます。",
+    },
+  ],
+  related: [
+    {
+      tab: "discount",
+      label: "割引計算機",
+      when: "セール品の割引後の支払額をまとめて知りたい",
+    },
+    {
+      tab: "tax",
+      label: "消費税計算機",
+      when: "税率を加えた税込合計を知りたい",
+    },
+  ],
+};
 
 function parseNumber(value: string): number | null {
   const normalized = value.replace(/[，,]/g, "").trim();
@@ -79,33 +283,95 @@ function CalculateButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-function HelpSection({
-  usage,
-  mechanism,
-  mechanismTitle,
-  faq,
+function RelatedTools({
+  related,
+  onNavigate,
 }: {
-  usage: string;
-  mechanism: string;
-  mechanismTitle: string;
-  faq: string;
+  related: RelatedToolLink[];
+  onNavigate: (tab: TabId) => void;
 }) {
   return (
-    <div className="mt-6 rounded-xl border border-slate-100 bg-slate-50 p-5">
-      <h3 className="text-sm font-bold text-slate-700">このツールの使い方</h3>
-      <p className="mt-2 text-[13px] leading-relaxed text-slate-600">{usage}</p>
-      <h3 className="mt-4 text-sm font-bold text-slate-700">
-        {mechanismTitle}
-      </h3>
-      <p className="mt-2 text-[13px] leading-relaxed text-slate-600">
-        {mechanism}
-      </p>
-      <p className="mt-2 text-[13px] leading-relaxed text-slate-600">{faq}</p>
+    <div className="mt-3 space-y-2">
+      {related.map((tool) => (
+        <button
+          key={tool.tab}
+          type="button"
+          onClick={() => onNavigate(tool.tab)}
+          className="flex w-full items-center justify-between gap-3 rounded-lg border border-blue-100 bg-white px-4 py-3 text-left transition-all hover:border-blue-300 hover:bg-blue-50 active:scale-[0.99]"
+        >
+          <span>
+            <span className="block text-sm font-bold text-blue-600">
+              {tool.label}
+            </span>
+            <span className="mt-0.5 block text-xs text-slate-500">
+              {tool.when}
+            </span>
+          </span>
+          <span aria-hidden="true" className="text-blue-400">
+            →
+          </span>
+        </button>
+      ))}
     </div>
   );
 }
 
-function DiscountCalculator() {
+function HelpSection({
+  help,
+  onNavigate,
+}: {
+  help: HelpContent;
+  onNavigate: (tab: TabId) => void;
+}) {
+  return (
+    <div className="mt-6 rounded-xl border border-slate-100 bg-slate-50 p-5">
+      <h3 className="text-sm font-bold text-slate-700">何が計算できるか</h3>
+      <p className="mt-2 text-[13px] leading-relaxed text-slate-600">
+        {help.summary}
+      </p>
+
+      <h3 className="mt-4 text-sm font-bold text-slate-700">使い方</h3>
+      <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-[13px] leading-relaxed text-slate-600">
+        {help.steps.map((step) => (
+          <li key={step}>{step}</li>
+        ))}
+      </ol>
+
+      <h3 className="mt-4 text-sm font-bold text-slate-700">計算方法</h3>
+      <p className="mt-2 text-[13px] leading-relaxed text-slate-600">
+        {help.method}
+      </p>
+
+      <h3 className="mt-4 text-sm font-bold text-slate-700">注意点</h3>
+      <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[13px] leading-relaxed text-slate-600">
+        {help.notes.map((note) => (
+          <li key={note}>{note}</li>
+        ))}
+      </ul>
+
+      <h3 className="mt-4 text-sm font-bold text-slate-700">よくある疑問</h3>
+      <div className="mt-2 space-y-3">
+        {help.faqs.map((faq) => (
+          <div key={faq.q}>
+            <p className="text-[13px] font-bold text-slate-700">Q. {faq.q}</p>
+            <p className="mt-1 text-[13px] leading-relaxed text-slate-600">
+              A. {faq.a}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <h3 className="mt-4 text-sm font-bold text-slate-700">関連ツール</h3>
+      <RelatedTools related={help.related} onNavigate={onNavigate} />
+    </div>
+  );
+}
+
+function DiscountCalculator({
+  onNavigate,
+}: {
+  onNavigate: (tab: TabId) => void;
+}) {
   const [price, setPrice] = useState("");
   const [rate, setRate] = useState("");
   const [popKey, setPopKey] = useState(0);
@@ -230,20 +496,13 @@ function DiscountCalculator() {
           />
         </div>
       </div>
-      <AdPlaceholder />
 
-      <HelpSection
-        mechanismTitle="割引計算の仕組みと注意点・FAQ"
-        usage="「元の金額」にセール前の価格を、「割引率」に適用する割引の割合を入力すると、支払額と値引き額の目安を確認できます。10%、20%、30%、半額などのボタンは割引率欄へ値を入れるための近道です。たとえば3,000円の商品で20% OFFを選ぶと、割引後の価格は2,400円、値引き額は600円と表示されます。金額や率は半角数字で入力し、カンマ入りの金額も入力できます。割引率は0から100までが対象です。100%なら計算上の支払額は0円、0%なら元の金額のままです。値段を比較するときは、商品ごとの割引条件や対象期間も合わせて確認しましょう。"
-        mechanism="割引後の価格は、元の金額から割引分を差し引いて求めます。例として3,000円の20% OFFなら、元の金額のうち残る割合は80%なので、3,000円に0.8を掛けた2,400円が支払額の目安になります。値引き額は元の金額と割引後価格の差で、600円です。割引率は「100%から割引率を引いた残りの割合」と考えると直感的です。小数を含む金額や割合では結果に端数が出る場合があります。当サイトでは数値を小数点以下2桁まで表示しますが、店舗の会計では商品単位・会計単位の処理などにより表示が異なることがあります。"
-        faq="よくあるご質問：複数の割引が順番に適用される場合、割引率を単純に足し算しません。3,000円を20%引きにした後、さらに10%引きにすると、まず2,400円になり、その金額から10%を引いた2,160円が目安です。また「20%ポイント還元」は会計時の値引きとは異なり、後からポイントが付与される条件の場合があります。クーポン併用、割引上限、税込・税抜のどちらを基準にするかは販売者の表示をご確認ください。計算結果は参考値であり、最終的な請求額や適用条件は店舗の表示・レシートを優先してください。"
-      />
-      <AdPlaceholder />
+      <HelpSection help={DISCOUNT_HELP} onNavigate={onNavigate} />
     </div>
   );
 }
 
-function TaxCalculator() {
+function TaxCalculator({ onNavigate }: { onNavigate: (tab: TabId) => void }) {
   const [items, setItems] = useState<TaxItem[]>([
     { id: 0, name: "", price: "", rate: 10 },
   ]);
@@ -383,20 +642,17 @@ function TaxCalculator() {
           />
         </div>
       </div>
-      <AdPlaceholder />
 
-      <HelpSection
-        mechanismTitle="消費税と8%・10%の軽減税率・FAQ"
-        usage="「＋ 商品を追加」から買い物リストに商品行を追加し、商品名と税抜金額を入力します。各行の8%・10%スイッチで適用する税率を選ぶと、小計、税額、税込合計が更新されます。行末の×で不要な商品を削除できます。税率の異なる品物を一緒に購入する場合も、商品ごとに率を選べます。商品名は任意ですが、レシートや買い物メモと照らし合わせると確認しやすくなります。金額が税込表示の場合は、そのまま税抜価格として入力しないよう注意してください。入力前に値札やレシートの表示方法を確かめることで、二重に税を加える誤りを避けられます。このツールは買い物の概算を素早く把握するためのものです。"
-        mechanism="各行の金額に選択した税率分を加え、商品ごとの税込額を合計します。たとえば税抜1,000円で10%なら税込1,100円、税抜500円で8%なら税込540円となり、二品の税込合計は1,640円です。消費税額は税抜価格に税率を掛けて求めます。日本では標準税率10%と、一定の飲食料品や新聞などに適用される軽減税率8%があります。ただし対象となるかは商品区分や提供方法などの条件によって変わります。お弁当などは持ち帰りと店内飲食で税率が異なる例があり、酒類や外食は軽減税率の対象外となる場合があります。実際の区分は購入先の表示をご確認ください。"
-        faq="よくあるご質問：表示価格が税込か税抜か分からないときは、値札やレシートの表示、販売者の案内をご確認ください。店頭価格が税込なら、税込価格を税抜金額として入力すると税を重ねて加算してしまいます。また、実際の税額は事業者の端数処理や、商品単位・税率ごとの合計単位などにより、この簡易計算の結果と数円異なる場合があります。会計の確定額にはレシートや販売者の請求を優先してください。税務申告など重要な判断が必要な場合は、国税庁などの公的情報や専門家にご相談ください。本ツールは税務相談や正式な税額計算を代替するものではありません。"
-      />
-      <AdPlaceholder />
+      <HelpSection help={TAX_HELP} onNavigate={onNavigate} />
     </div>
   );
 }
 
-function PercentCalculator() {
+function PercentCalculator({
+  onNavigate,
+}: {
+  onNavigate: (tab: TabId) => void;
+}) {
   const [a, setA] = useState("");
   const [b, setB] = useState("");
   const [popKey, setPopKey] = useState(0);
@@ -465,21 +721,20 @@ function PercentCalculator() {
           />
         </div>
       </div>
-      <AdPlaceholder />
 
-      <HelpSection
-        mechanismTitle="日常生活に役立つパーセント計算・FAQ"
-        usage="「AのB%はいくら？」という文章のAとBに数値を入れて使います。Aには全体の数、Bには調べたい割合を入力してください。たとえば2,000円の15%を知りたいなら、Aに2,000、Bに15を入力すると300円と表示されます。テストの満点から目標点を求めたり、レシピを人数に合わせて増減したり、予算の一部を把握したりする場面にも使えます。金額だけでなく、個数や点数など単位のある数にも応用できます。結果を読むときは元の数値と同じ単位になるため、円の15%なら円、250点の80%なら点として理解してください。入力した数値と質問の意味が合っているか、表示を確認しましょう。"
-        mechanism="パーセントは「100を基準にした割合」を表します。100%は全体と同じ量、50%は全体の半分、25%は4分の1です。「AのB%」を求めるときは、Aを全体として、そのB割分を取り出します。例として2,000の15%は300です。Aが0なら、どの割合を指定しても結果は0になります。Bが100より大きい場合は、全体より大きい結果になることがあります。これは誤りとは限らず、元の量に対して何倍に当たるかを表す用途で使われます。小数の割合や金額を入力した際、計算結果に端数が含まれることがあります。表示値は目安として読み取り、実際の支払い・配分では必要な丸め方を確認してください。"
-        faq="よくあるご質問：「40は200の何%？」は「200を基準に40が占める割合」を求める問いで、「200の40%はいくら？」とは別の計算です。前者の例では40は200の20%に当たります。割合を知りたいのか、割合に相当する量を知りたいのかを文章にしてから入力すると間違いを減らせます。割引額を調べたいときは元値と割引率、割引後の支払額を知りたいときは割引計算機が便利です。税率を加えた合計は消費税計算機をご利用ください。計算結果は入力値から得られる数学上の値で、試験の配点や販売価格の端数処理など個別の条件を考慮するものではありません。"
-      />
-      <AdPlaceholder />
+      <HelpSection help={PERCENT_HELP} onNavigate={onNavigate} />
     </div>
   );
 }
 
 export default function CalculatorApp() {
   const [activeTab, setActiveTab] = useState<TabId>("discount");
+  const tabsRef = useRef<HTMLDivElement>(null);
+
+  const goToTool = (tab: TabId) => {
+    setActiveTab(tab);
+    tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <main className="mx-auto w-full max-w-xl flex-1 px-4 py-8 sm:py-12">
@@ -487,43 +742,146 @@ export default function CalculatorApp() {
         <h1 className="text-2xl font-black tracking-tight text-slate-800 sm:text-3xl">
           お買いもの計算ツールズ
         </h1>
-        <p className="mt-2 text-sm text-slate-500">
-          割引・消費税・パーセントを、その場ですぐ計算
+        <p className="mt-3 text-sm leading-relaxed text-slate-500">
+          セールの値引き後の価格、税込みの合計、○○の○%。
+          <br className="sm:hidden" />
+          買い物中の「これ、いくら？」を、その場ですぐ計算できる無料ツールです。
         </p>
       </header>
 
-      <nav role="tablist" aria-label="計算ツールの切り替え" className="mb-8 grid grid-cols-3 gap-2">
-        {TABS.map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => setActiveTab(tab.id)}
-              className={`rounded-xl py-3 font-bold transition-all ${
-                isActive
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
-                  : "border border-slate-200 bg-white text-slate-500 hover:border-blue-300 hover:text-blue-600"
-              }`}
+      <section aria-labelledby="what-you-can-do" className="mb-8">
+        <h2 id="what-you-can-do" className="text-base font-bold text-slate-800">
+          このサイトでできること
+        </h2>
+        <div className="mt-3 space-y-3">
+          {THINGS_YOU_CAN_DO.map((item) => (
+            <div
+              key={item.title}
+              className="flex gap-3 rounded-xl border border-slate-100 bg-white p-4 shadow-sm"
             >
-              <span className="block text-lg leading-relaxed">{tab.icon}</span>
-              <span className="block text-xs sm:text-sm">{tab.label}</span>
-            </button>
-          );
-        })}
-      </nav>
+              <span aria-hidden="true" className="text-xl leading-none">
+                {item.icon}
+              </span>
+              <div>
+                <p className="text-sm font-bold text-slate-800">{item.title}</p>
+                <p className="mt-1 text-[13px] leading-relaxed text-slate-500">
+                  {item.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
-      <div role="tabpanel" className={activeTab === "discount" ? "" : "hidden"}>
-        <DiscountCalculator />
+      <div ref={tabsRef} className="scroll-mt-4">
+        <nav
+          role="tablist"
+          aria-label="計算ツールの切り替え"
+          className="mb-8 grid grid-cols-3 gap-2"
+        >
+          {TABS.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActiveTab(tab.id)}
+                className={`rounded-xl py-3 font-bold transition-all ${
+                  isActive
+                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
+                    : "border border-slate-200 bg-white text-slate-500 hover:border-blue-300 hover:text-blue-600"
+                }`}
+              >
+                <span className="block text-lg leading-relaxed">
+                  {tab.icon}
+                </span>
+                <span className="block text-xs sm:text-sm">{tab.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        <div role="tabpanel" className={activeTab === "discount" ? "" : "hidden"}>
+          <DiscountCalculator onNavigate={goToTool} />
+        </div>
+        <div role="tabpanel" className={activeTab === "tax" ? "" : "hidden"}>
+          <TaxCalculator onNavigate={goToTool} />
+        </div>
+        <div role="tabpanel" className={activeTab === "percent" ? "" : "hidden"}>
+          <PercentCalculator onNavigate={goToTool} />
+        </div>
       </div>
-      <div role="tabpanel" className={activeTab === "tax" ? "" : "hidden"}>
-        <TaxCalculator />
-      </div>
-      <div role="tabpanel" className={activeTab === "percent" ? "" : "hidden"}>
-        <PercentCalculator />
-      </div>
+
+      <section aria-labelledby="tool-guide" className="mt-10">
+        <h2 id="tool-guide" className="text-base font-bold text-slate-800">
+          どの計算機を使えばいい？
+        </h2>
+        <p className="mt-1 text-[13px] text-slate-500">
+          知りたいことから選ぶと、対応する計算機が開きます。
+        </p>
+        <div className="mt-3 space-y-2">
+          {TOOL_GUIDE.map((guide) => (
+            <button
+              key={guide.question}
+              type="button"
+              onClick={() => goToTool(guide.tab)}
+              className="flex w-full items-center justify-between gap-3 rounded-xl border border-slate-100 bg-white p-4 text-left shadow-sm transition-all hover:border-blue-300 hover:shadow active:scale-[0.99]"
+            >
+              <span>
+                <span className="block text-sm font-semibold text-slate-700">
+                  {guide.question}
+                </span>
+                <span className="mt-0.5 block text-xs font-bold text-blue-600">
+                  → {guide.answer}
+                </span>
+              </span>
+              <span aria-hidden="true" className="text-slate-300">
+                ▸
+              </span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="usage-examples" className="mt-8">
+        <h2 id="usage-examples" className="text-base font-bold text-slate-800">
+          実際の利用例
+        </h2>
+        <div className="mt-3 space-y-3">
+          {USAGE_EXAMPLES.map((example) => (
+            <div
+              key={example.scene}
+              className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm"
+            >
+              <p className="text-sm font-semibold leading-relaxed text-slate-800">
+                <span aria-hidden="true" className="mr-1.5">
+                  {example.icon}
+                </span>
+                {example.scene}
+              </p>
+              <dl className="mt-3 space-y-1 text-[13px]">
+                <div className="flex flex-wrap gap-x-2">
+                  <dt className="font-bold text-slate-500">入力</dt>
+                  <dd className="text-slate-600">{example.input}</dd>
+                </div>
+                <div className="flex flex-wrap gap-x-2">
+                  <dt className="font-bold text-slate-500">結果</dt>
+                  <dd className="font-bold text-blue-600">{example.output}</dd>
+                </div>
+              </dl>
+              <button
+                type="button"
+                onClick={() => goToTool(example.tab)}
+                className="mt-3 w-full rounded-lg border-2 border-blue-100 py-2 text-sm font-bold text-blue-600 transition-all hover:bg-blue-50 active:scale-[0.99]"
+              >
+                この計算機を試す
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <footer className="mt-10 text-center text-xs text-slate-400">
         <nav className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">

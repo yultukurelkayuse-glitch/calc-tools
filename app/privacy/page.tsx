@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import InfoPageShell from "../components/InfoPageShell";
 
 export const metadata: Metadata = {
-  title: "プライバシーポリシー | スマート計算ツール",
-  description: "スマート計算ツールの個人情報、Cookie、広告配信等の取り扱いについて。",
+  title: "プライバシーポリシー | お買いもの計算ツールズ",
+  description: "お買いもの計算ツールズの個人情報、Cookie、広告配信等の取り扱いについて。",
   alternates: {
     canonical: "/privacy",
   },
@@ -14,7 +14,7 @@ export default function PrivacyPage() {
     <InfoPageShell title="プライバシーポリシー">
       <div className="space-y-6 text-sm leading-7 text-slate-600">
         <p>
-          スマート計算ツール（以下「当サイト」）は、利用者のプライバシーを尊重し、個人情報を適切に取り扱うよう努めます。本ポリシーでは、当サイトでの情報の取り扱いについて説明します。
+          お買いもの計算ツールズ（以下「当サイト」）は、利用者のプライバシーを尊重し、個人情報を適切に取り扱うよう努めます。本ポリシーでは、当サイトでの情報の取り扱いについて説明します。
         </p>
 
         <section>
