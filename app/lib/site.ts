@@ -11,5 +11,8 @@ export const ADSENSE_CLIENT =
  * 新しいツールページを追加したら、ここに1行追加する。
  */
 export const SITE_TOOLS: Record<string, string> = {
+  "/discount": "割引計算機",
+  "/tax": "消費税計算機",
+  "/percentage": "パーセント計算機",
   "/text/duplicate-lines": "テキスト重複削除ツール",
 };
